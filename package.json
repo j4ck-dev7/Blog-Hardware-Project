@@ -1,0 +1,30 @@
+{
+  "name": "blog-hardaware-project",
+  "version": "1.0.0",
+  "description": "Blog sobre hardware para aplicar conhecimentos em  backend",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j4ck-dev7/Blog-Hardware-Project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/j4ck-dev7/Blog-Hardware-Project/issues"
+  },
+  "homepage": "https://github.com/j4ck-dev7/Blog-Hardware-Project#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.16.4"
+  }
+}
