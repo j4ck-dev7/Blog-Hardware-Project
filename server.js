@@ -4,8 +4,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 
 // Importação de módulos
-import adminRoute from './src/routes/adminRoute.js'
-import userRoute from './src/routes/userRoute.js'
+import adminRoute from './src/routes/admin/adminRoute.js'
+import userRoute from './src/routes/user/userRoute.js'
 
 // Inicialização do ambiente de desenvolvimento
 const app = express();
