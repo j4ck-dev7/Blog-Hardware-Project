@@ -2,17 +2,23 @@
 import express from 'express';
 
 // Importação de módulos
+// Controllers
 import { signIn } from '../../controllers/admin/signIn.js';
-import { addContent } from '../../controllers/admin/manager.js'
+import { addArticle, searchArticle, editArticle } from '../../controllers/admin/manager.js';
+// Middlewares
 import { adminAuth } from '../../middleware/admin/adminAuth.js';
+import { loginValidate } from '../../middlewares/universal/loginValidate.js';
 
 // Inicialização do roteador
 const router = express.Router();
 
 // Definição de rotas
 // Roteamento para formulários
-router.post('/admin/signIn', signIn)
-router.post('/admin/addContent', adminAuth, addContent)
+router.get('/admin/search/', adminAuth, searchArticle);
+
+router.post('/admin/signIn', loginValidate, signIn);
+router.post('/admin/addArticle', adminAuth, addArticle);
+router.put('/admin/editArticle/:slug', adminAuth, editArticle);
 
 // Roteamento para páginas
 // router.get('/admin/main', adminAuth)

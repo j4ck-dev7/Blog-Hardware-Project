@@ -18,8 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Middleware de rota
-app.use('/app', adminRoute)
-app.use('/app', userRoute)
+app.use('/api', adminRoute)
+app.use('/api', userRoute)
 
 // Inicialização do servidor
 const PORT = process.env.PORT

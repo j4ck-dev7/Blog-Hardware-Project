@@ -20,7 +20,7 @@ export const signUp = async (req, res) => {
         const savedUser = await user.save()
         let token = jwt.sign( { _id : savedUser._id }, process.env.SECRET )
         res.cookie('AuthCookie', token, { secure: true, httpOnly: true, expires: new Date(Date.now() + 2 * 3600000) })
-        res.redirect('/app/user/main');
+        res.status(200).json({ message: "Usuário registrado com sucesso!" })
     } catch (error) {
         res.status(400).send(error)
     }

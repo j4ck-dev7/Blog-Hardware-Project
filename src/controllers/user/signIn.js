@@ -16,7 +16,7 @@ export const signIn = async (req, res) => {
     try {
         let token = jwt.sign( { _id : selectedUser._id }, process.env.SECRET )
         res.cookie('AuthCookie', token, { secure: true, httpOnly: true, expires: new Date(Date.now() + 2 * 3600000) })
-        res.redirect('/app/user/main');
+        res.status(200).json({ message: "Usuário logado com sucesso!" })
     } catch (error) {
         res.status(400).send(error)
     } 
