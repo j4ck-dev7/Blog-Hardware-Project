@@ -1,6 +1,7 @@
 // Importação de depêndencias
 import slugify from 'slugify'
 import sanitize from 'sanitize-html' // aprendido!
+import { body, validationResult } from 'express-validator'
 
 // Importação de módulos
 import Article from '../../models/Article.js'
@@ -48,22 +49,65 @@ export const addArticle = async (req, res) => {
     }
 }
 
-export const searchArticle = async (req, res) => {
+export const searchArticle = [
+    body('pesquisa')
+        .trim()
+        .notEmpty().withMessage('Campo vazio, digite algo!'),
+
+    async (req, res) => {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+            const pesquisa = req.body.pesquisa;
+            if(!pesquisa) return res.status(404).json({ message: "Campo vazio, digite algo!" })
+
+            const db = await Article.findOne({ titulo: pesquisa })
+            if(!db) return res.status(404).json({ message: 'Artigo não encontrado | não existente' })
+
+            res.json({ 
+                message: 'Artigo encontrado com sucesso!',
+                data: db 
+            })
+        } catch (error) {
+            res.status(500).json({ message: 'Erro no servidor, tente novamente mais tarde' })
+            console.error('Erro ao buscar artigo:', error)
+        }
+    }
+]
+
+
+export const editArticle = async (req, res) => {
     try {
-        const pesquisa = req.body.pesquisa;
-        if(!pesquisa) return res.status(404).json({ message: "Campo vazio, digite algo!" })
-        console.log(pesquisa)
+        const data = { ...req.body };
 
-        const db = await Article.findOne({ titulo: pesquisa })
-        if(!db) return res.status(404).json({ message: "Artigo não encontrado | não existente" })
-        console.log(db.slug)
+        if(req.body.titulo){
+            data.slug = slugify(req.body.titulo, { 
+                lower: true,
+                strict: true,
+                remove: /[*+~.()'"!:@]/g
+            })
+        }
 
-        res.json({db})
+        const artigoEdit = await Article.findByIdAndUpdate(
+            req.params.id,
+            { $set: data}, // Apenas os campos enviados é atualizados
+            { new: true, runValidators: true } // Retorna o artigo atualizado e o valida
+        );
+
+        if (!artigoEdit) {
+            return res.status(404).json({ error: 'Artigo não encontrado' });
+        }
+
+        res.json({
+            message: 'artigo editado com sucesso!',
+            data
+        })
     } catch (error) {
         res.json(error)
     }
 }
 
-export const editArticle = (req, res) => {
+export const deleteArticle = (req, res) => {
     
 }
