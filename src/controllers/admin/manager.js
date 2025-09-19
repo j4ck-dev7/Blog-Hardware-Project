@@ -76,7 +76,6 @@ export const searchArticle = [
     }
 ]
 
-
 export const editArticle = async (req, res) => {
     try {
         const data = { ...req.body };
