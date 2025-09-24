@@ -1,25 +1,23 @@
 // Importação de depêndencias
 import slugify from 'slugify'
-import sanitize from 'sanitize-html' // aprendido!
+import sanitize from 'sanitize-html'
 import { body, validationResult } from 'express-validator'
 
-// Importação de módulos
 import Article from '../../models/Article.js'
 
 export const addArticle = async (req, res) => {
     try {
-        const slug = slugify(req.body.titulo, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g }) // aprendido!
+        const slug = slugify(req.body.titulo, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g })
         const { conteudo } = req.body
         
         if (Array.isArray(conteudo)) {
             console.log('O campo "conteudo" é um array');
         }
 
-        // Sanitização do conteúdo
         const conteudoSanitizado = conteudo.map(bloco => {
             if(bloco.tipo === 'paragrafo'){
                 return {
-                    ...bloco, // aprendido! 
+                    ...bloco,
                     valor: sanitize(bloco.valor, { allowedTags: [], allowedAttributes: {} })
                 }
             };
@@ -90,8 +88,8 @@ export const editArticle = async (req, res) => {
 
         const artigoEdit = await Article.findByIdAndUpdate(
             req.params.id,
-            { $set: data}, // Apenas os campos enviados é atualizados
-            { new: true, runValidators: true } // Retorna o artigo atualizado e o valida
+            { $set: data}, 
+            { new: true, runValidators: true } 
         );
 
         if (!artigoEdit) {
@@ -107,6 +105,16 @@ export const editArticle = async (req, res) => {
     }
 }
 
-export const deleteArticle = (req, res) => {
-    
+export const deleteArticle = async (req, res) => {
+    try {
+        const id = req.params.id
+
+        const db = await Article.findByIdAndDelete(id)
+        if(!db) return res.status(404).json({ message: 'Artigo não encontrado' })
+            
+        return res.status(200).json({ message: 'Artigo excluído com sucesso' })
+    } catch (error) {
+        res.status(500).json({ message: 'Erro no servidor, tente novamente mais tarde' })
+        console.log('Erro ao excluir o artigo:', error)
+    }
 }

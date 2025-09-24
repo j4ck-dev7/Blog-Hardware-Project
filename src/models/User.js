@@ -1,7 +1,5 @@
-// Importação de depêndencias
 import mongoose from 'mongoose';
 
-// Modelo de usuário
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true, unique:true, minlength: 3, maxlength: 50 },
     email: { type: String, required: true, unique:true, minlength: 13, maxlength: 50 },

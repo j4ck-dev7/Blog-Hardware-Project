@@ -1,11 +1,8 @@
-// Importação de dependências
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
-// Importação de módulos
 import User from '../../models/User.js'
 
-// Login | Lógica 
 export const signIn = async (req, res) => {
     const selectedUser = await User.findOne({ email: req.body.email })
     if(!selectedUser) return res.status(400).send("Email ou senha incorretos");

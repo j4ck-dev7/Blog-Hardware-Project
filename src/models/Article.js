@@ -1,7 +1,5 @@
-// Importação de depêndencias
 import mongoose from "mongoose";
 
-// Modelo de conteúdo
 const contentSchema = new mongoose.Schema({
     tipo: {
         type: String, required: true, enum: ['paragrafo', 'imagem']
@@ -28,7 +26,6 @@ const contentSchema = new mongoose.Schema({
     }
 });
 
-// Modelo do artigo
 const articleSchema = new mongoose.Schema({
     titulo: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true },

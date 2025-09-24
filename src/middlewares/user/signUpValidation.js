@@ -1,4 +1,3 @@
-// Importação de depêndencias 
 import { body, validationResult } from 'express-validator';
 
 export const signUpValidator = [ 
