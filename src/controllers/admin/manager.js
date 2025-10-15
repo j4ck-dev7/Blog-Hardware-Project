@@ -1,4 +1,3 @@
-// Importação de depêndencias
 import slugify from 'slugify'
 import sanitize from 'sanitize-html'
 import { body, validationResult } from 'express-validator'
@@ -7,9 +6,9 @@ import Article from '../../models/Article.js'
 
 export const addArticle = async (req, res) => {
     try {
-        const slug = slugify(req.body.titulo, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g })
+        const titulo = req.body.titulo
+        const slug = slugify(titulo, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g })
         const { conteudo } = req.body
-        
         if (Array.isArray(conteudo)) {
             console.log('O campo "conteudo" é um array');
         }
@@ -35,7 +34,7 @@ export const addArticle = async (req, res) => {
         })
 
         const article = new Article({
-            titulo: req.body.titulo,
+            titulo,
             slug: slug,
             autor: req.body.autor,
             conteudo: conteudoSanitizado
@@ -75,11 +74,13 @@ export const searchArticle = [
 ]
 
 export const editArticle = async (req, res) => {
+    const id = req.params.id;
+
     try {
         const data = { ...req.body };
 
-        if(req.body.titulo){
-            data.slug = slugify(req.body.titulo, { 
+        if(titulo){
+            data.slug = slugify(titulo, { 
                 lower: true,
                 strict: true,
                 remove: /[*+~.()'"!:@]/g
@@ -87,7 +88,7 @@ export const editArticle = async (req, res) => {
         }
 
         const artigoEdit = await Article.findByIdAndUpdate(
-            req.params.id,
+            id,
             { $set: data}, 
             { new: true, runValidators: true } 
         );
@@ -106,9 +107,9 @@ export const editArticle = async (req, res) => {
 }
 
 export const deleteArticle = async (req, res) => {
-    try {
-        const id = req.params.id
+    const id = req.params.id;
 
+    try {
         const db = await Article.findByIdAndDelete(id)
         if(!db) return res.status(404).json({ message: 'Artigo não encontrado' })
             

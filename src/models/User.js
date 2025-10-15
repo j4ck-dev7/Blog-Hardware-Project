@@ -11,8 +11,6 @@ const userSchema = new mongoose.Schema({
         enum: [ 'admin', 'redator', 'usuario' ],
         default: 'usuario'
     },
-    artigosCurtidos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artigo' }],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     createdAt: { type: Date, default: Date.now }
 })
 

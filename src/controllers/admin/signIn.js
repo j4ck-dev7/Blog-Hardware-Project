@@ -7,7 +7,8 @@ import User from '../../models/User.js';
 
 // Login | Lógica 
 export const signIn = async (req, res) => {
-    const selectedUser = await User.findOne({ email: req.body.email })
+    const email = req.body.email;
+    const selectedUser = await User.findOne({ email })
     if(!selectedUser) return res.status(400).send("Email ou senha incorretos");
 
     const passwordMatch = bcryptjs.compare(req.body.password, selectedUser.password)
