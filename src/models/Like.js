@@ -6,4 +6,4 @@ const likeSchema = new mongoose.Schema({
     createdAt: Date
 });
 
-export default mongoose.model('Like', likeSchema)
+export default mongoose.model('Like', likeSchema);

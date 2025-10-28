@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const contentSchema = new mongoose.Schema({
     tipo: {
-        type: String, required: true, enum: ['paragrafo', 'imagem']
+        type: String, required: true, enum: ['paragrafo', 'imagem'],
     },
     valor: {
         type: String, required: () => {
@@ -24,7 +24,7 @@ const contentSchema = new mongoose.Schema({
             return contentSchema.tipo === 'imagem';
         }
     }
-});
+}, { _id: false });
 
 const articleSchema = new mongoose.Schema({
     titulo: { type: String, required: true, trim: true },
@@ -34,4 +34,4 @@ const articleSchema = new mongoose.Schema({
     conteudo: [contentSchema],
 })
 
-export default mongoose.model('Article', articleSchema)
+export default mongoose.model('Article', articleSchema);

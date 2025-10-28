@@ -8,7 +8,7 @@ export const signIn = async (req, res) => {
     const selectedUser = await User.findOne({ email })
     if(!selectedUser) return res.status(400).send("Email ou senha incorretos");
 
-    const passwordMatch = bcrypt.compare(req.body.password, selectedUser.password);
+    const passwordMatch = await bcrypt.compare(req.body.password, selectedUser.password);
     if (!passwordMatch) return res.status(400).send("Email ou senha incorretos");
 
     try {
@@ -16,6 +16,7 @@ export const signIn = async (req, res) => {
         res.cookie('AuthCookie', token, { secure: true, httpOnly: true, expires: new Date(Date.now() + 2 * 3600000) })
         res.status(200).json({ message: "Usuário logado com sucesso!" })
     } catch (error) {
-        res.status(400).send(error)
+        res.status(500).json({ message: 'Erro interno do servidor' });
+        console.error('Falha ao usuário logar', error)
     } 
 }
