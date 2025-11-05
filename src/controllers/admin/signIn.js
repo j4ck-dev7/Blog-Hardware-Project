@@ -22,5 +22,6 @@ export const signIn = async (req, res) => {
         res.status(200).json({ message: "Admin logado com sucesso!" });
     } catch (error) {
         res.status(500).json({ message: 'Erro interno do servidor' });
+        console.error('Erro ao logar', error);
     }
 }

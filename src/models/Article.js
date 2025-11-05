@@ -32,6 +32,10 @@ const articleSchema = new mongoose.Schema({
     dataCriação: { type: Date, default: Date.now },
     autor: { type: String, required: true },
     conteudo: [contentSchema],
+    tags: {
+        type: String,
+        enum: [ 'tag1', 'tag2', 'tag3', 'tag4', 'tag5' ]
+    }
 })
 
 export default mongoose.model('Article', articleSchema);

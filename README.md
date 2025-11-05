@@ -6,7 +6,7 @@
 
 ## Descrição
 
-Esta é uma API RESTful para um blog focado em temas de hardware, como processadores e placas de vídeo. A API permite gerenciar artigos, comentários e curtidas, com suporte a autenticação de usuários. Futuramente, será integrada a um frontend para uma experiência completa de blog.
+Esta é uma API REST que simula um backend de um blog. A API permite gerenciar artigos como administrador e como usuário pode adicionar comentários e curtidas, com suporte a autenticação de usuários. Futuramente, será integrada a um frontend para uma experiência completa de blog.
 
 Principais funcionalidades:
 - Listagem e pesquisa de artigos.

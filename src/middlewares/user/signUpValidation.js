@@ -1,7 +1,7 @@
 import { body, validationResult } from 'express-validator';
 
 export const signUpValidator = [ 
-    body('username')
+    body('name')
         .trim()
         .notEmpty().withMessage('Nome de usuário é obrigatório')
         .isLength({ min: 3, max: 50 }).withMessage('Nome de usuário deve ter entre 3 e 20 caracteres')
