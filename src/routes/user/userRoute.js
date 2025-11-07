@@ -4,7 +4,7 @@ import { signIn } from '../../controllers/user/signIn.js';
 import { signUp } from '../../controllers/user/signUp.js';
 import { like, removeLike, allLikes } from '../../controllers/user/likeController.js';
 import { comment, removeComment, editComment } from '../../controllers/user/commentController.js';
-import { allArticles, loadArticle } from '../../controllers/user/articleController.js';
+import { allArticles, loadArticle, findArticleByTag } from '../../controllers/user/articleController.js';
 
 import { signUpValidator } from '../../middlewares/user/signUpValidation.js';
 import { loginValidate } from '../../middlewares/universal/loginValidate.js';       
@@ -15,6 +15,7 @@ const router = express.Router();
 router.get('/curtidas', auth, allLikes);
 router.get('/artigos', auth, allArticles);
 router.get('/artigo/:slug', auth, loadArticle);
+router.get('/articles/tag', auth, findArticleByTag);
 
 router.post('/signIn', loginValidate, signIn);
 router.post('/signUp', signUpValidator, signUp);

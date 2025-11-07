@@ -8,7 +8,6 @@ import userRoute from './src/routes/user/userRoute.js';
 const app = express();
 dotenv.config();
 import { connect } from './src/db/db.js';
-import client from './src/db/redis.js';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

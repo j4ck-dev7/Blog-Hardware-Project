@@ -112,3 +112,62 @@ export const loadArticle = async (req, res) => {
       return res.status(500).json({ message: 'Erro interno no servidor' });
     }
 };
+
+export const findArticleByTag = async (req, res) => {
+      const tags = req.query.tag;
+
+      const pageNum = Math.max(1, parseInt(req.query.page));
+      const limitNum = Math.min(5, Math.max(1, parseInt(req.query.limit)));
+      const skip = (pageNum -1) * limitNum;
+
+      const cacheKey = `articles:tag:${tags}:page:${pageNum}:limit:${limitNum}`
+
+    try {
+      const cached = await client.get(cacheKey);
+      if(cached){
+        return res.status(200).json(JSON.parse(cached));
+      }
+
+      const [total, articlesData] = await Promise.all([
+        Article.countDocuments({tags}),
+        Article.find({tags})
+          .sort({ dataCriação: -1 })
+          .skip(skip)
+          .limit(limitNum)
+          .select('-_id -conteudo._id -__v')
+          .lean()
+      ]);
+
+      const articles = articlesData.map(a => ({
+        titulo: a.titulo,
+        autor: a.autor,
+        conteudo: a.conteudo,
+        criadoEm: formatarDataHora(a.dataCriação)
+      }));
+
+      const totalPages = Math.ceil(total / limitNum);
+      const pagination = {
+        total,
+        pages: totalPages,
+        currentPage: pageNum,
+        limit: limitNum,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
+      };
+
+      const data = {
+        articles,
+        pagination
+      };
+
+      await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data))
+
+      res.status(200).json({ 
+        message: 'Artigos obtidos', 
+        data
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro interno' });
+    };
+};
