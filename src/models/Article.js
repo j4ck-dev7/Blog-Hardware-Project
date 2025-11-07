@@ -33,8 +33,9 @@ const articleSchema = new mongoose.Schema({
     autor: { type: String, required: true },
     conteudo: [contentSchema],
     tags: {
-        type: String,
-        enum: [ 'tag1', 'tag2', 'tag3', 'tag4', 'tag5' ]
+        type: [ String ],
+        enum: [ 'tag1', 'tag2', 'tag3', 'tag4', 'tag5' ],
+        required: true
     }
 })
 

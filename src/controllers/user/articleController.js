@@ -1,15 +1,25 @@
 import Article from '../../models/Article.js';
 import Comment from '../../models/Comment.js';
 import Like from '../../models/Like.js';
+import client from '../../db/redis.js';
 
 import { formatarDataHora } from '../../utills/formatarDataHora.js';
 import { tempoRelativo } from '../../utills/tempoRelativo.js';
+
+const CACHE_TTL = 300;
 
 export const allArticles = async (req, res) => {
     try {
       const pageNum = Math.max(1, parseInt(req.query.page));
       const limitNum = Math.min(5, Math.max(1, parseInt(req.query.limit)));
       const skip = (pageNum -1) * limitNum;
+
+      const cacheKey = `articles:page:${pageNum}:limit:${limitNum}`
+      const cached = await client.get(cacheKey);
+      if(cached){
+        return res.status(200).json(JSON.parse(cached));
+      }
+
       const [total, articlesData] = await Promise.all([
         Article.countDocuments(),
         Article.find()
@@ -25,7 +35,7 @@ export const allArticles = async (req, res) => {
         autor: a.autor,
         conteudo: a.conteudo,
         criadoEm: formatarDataHora(a.dataCriação)
-      }))
+      }));
 
       const totalPages = Math.ceil(total / limitNum);
       const pagination = {
@@ -35,14 +45,18 @@ export const allArticles = async (req, res) => {
         limit: limitNum,
         hasNext: pageNum < totalPages,
         hasPrev: pageNum > 1
-      }
+      };
+
+      const data = {
+        articles,
+        pagination
+      };
+
+      await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data))
 
       res.status(200).json({ 
         message: 'Artigos obtidos', 
-        data: {
-          articles
-        }, 
-        pagination
+        data
       });
     } catch (error) {
         res.status(500).json({ message: 'Erro interno no servidor' });

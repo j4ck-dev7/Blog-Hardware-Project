@@ -1,19 +1,24 @@
 import slugify from 'slugify';
+import client from '../../db/redis.js';
 
 import Article from '../../models/Article.js';
 
 export const addArticle = async (req, res) => {
     try {
+        const { conteudo, titulo, autor, tags } = req.body;
         const slug = slugify(titulo, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
-        const { conteudo, titulo, autor } = req.body;
 
         const article = new Article({
             titulo,
             slug,
             autor,
-            conteudo
+            conteudo,
+            tags
         });    
         await article.save();
+
+        await client.del(`articles:page:1:limit:5`);
+
         res.status(201).json({ message: 'Post criado com sucesso!', article });
     } catch (error) {
         res.status(500).json({ message: 'Erro interno do servidor' });
@@ -25,7 +30,7 @@ export const editArticle = async (req, res) => {
     try {
         const data = { ...req.body };
 
-        if(titulo){
+        if(data.titulo){
             data.slug = slugify(titulo, { 
                 lower: true,
                 strict: true,
@@ -42,6 +47,8 @@ export const editArticle = async (req, res) => {
         if (!artigoEdit) {
             return res.status(404).json({ error: 'Artigo não encontrado' });
         };
+
+        await client.del(`articles:page:1:limit:5`);
 
         res.status(200).json({
             message: 'artigo editado com sucesso!',
