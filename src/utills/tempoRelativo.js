@@ -1,11 +1,11 @@
-export const tempoRelativo = (data) => {
-    const agora = Date.now();
-    const diff = agora - new Date(data);
-    const segundos = Math.floor(diff / 1000);
+export const relativeTime = (date) => {
+    const now = Date.now();
+    const diff = now - new Date(date);
+    const seconds = Math.floor(diff / 1000);
     
-    if(segundos < 60) return 'agora mesmo';
-    if(segundos < 3600) return `há ${Math.floor(segundos / 60)} munitos`;
-    if(segundos < 86400) return `há ${Math.floor(segundos / 3600)} horas`;
-    if(segundos < 172800) return 'ontem';
-    return `há ${Math.floor(segundos / 86400)} dias`;
+    if(seconds < 60) return 'right now';
+    if(seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+    if(seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+    if(seconds < 172800) return 'yesterday';
+    return `${Math.floor(segundos / 86400)} days ago`;
 }

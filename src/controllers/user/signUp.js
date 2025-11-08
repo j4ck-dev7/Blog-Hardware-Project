@@ -1,15 +1,12 @@
-// Importação de depêndencias 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-// Importação de módulos
 import User from '../../models/User.js';
 
-// Register logic
 export const signUp = async (req, res) => {
     const email = req.body.email;
     const selectedUser = await User.findOne({ email });
-    if(selectedUser) return res.status(409).send('Email existente');
+    if(selectedUser) return res.status(409).send('Existing email');
 
     const user = new User({
         name: req.body.name,
@@ -20,10 +17,10 @@ export const signUp = async (req, res) => {
     try {
         const savedUser = await user.save();
         let token = jwt.sign( { _id : savedUser._id, email }, process.env.SECRET );
-        res.cookie('AuthCookie', token, { secure: true, httpOnly: true, expires: new Date(Date.now() + 2 * 3600000) });
-        res.status(201).json({ message: "Usuário registrado com sucesso!" });
+        res.cookie('userAuth', token, { secure: true, httpOnly: true, expires: new Date(Date.now() + 2 * 3600000) });
+        res.status(201).json({ message: "User successfully registered" });
     } catch (error) {
-        res.status(500).json({ message: 'Erro interno do servidor' });
-        console.error('Erro ao criar um novo usuário', error)
+        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error creating a new user', error)
     }
 }

@@ -1,4 +1,4 @@
-export const formatarDataHora = (data) => {
+export const formatDateTime = (data) => {
     return new Date(data).toLocaleString('pt-BR', {
         day: '2-digit',
         month: '2-digit',

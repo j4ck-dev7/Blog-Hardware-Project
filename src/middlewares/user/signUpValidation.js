@@ -3,19 +3,19 @@ import { body, validationResult } from 'express-validator';
 export const signUpValidator = [ 
     body('name')
         .trim()
-        .notEmpty().withMessage('Nome de usuário é obrigatório')
-        .isLength({ min: 3, max: 50 }).withMessage('Nome de usuário deve ter entre 3 e 20 caracteres')
-        .isAlphanumeric().withMessage('Nome de usuário deve conter apenas letras e números'),
+        .notEmpty().withMessage('Username is required')
+        .isLength({ min: 3, max: 50 }).withMessage('Usernames must be between 3 and 20 characters long.')
+        .isAlphanumeric().withMessage('Usernames must contain only letters and numbers.'),
 
     body('email')
         .trim()
-        .notEmpty().withMessage('Email é obrigatório')
-        .isEmail().withMessage('Email inválido')
+        .notEmpty().withMessage('Email is required')
+        .isEmail().withMessage('Invalid email address')
         .normalizeEmail(),
 
     body('password')
-        .notEmpty().withMessage('Senha é obrigatória')
-        .isLength({ min : 8 }).withMessage('Senha deve conter pelo menos 8 caracteres'),
+        .notEmpty().withMessage('password is required')
+        .isLength({ min : 8 }).withMessage('The password must contain at least 8 characters.'),
 
     (req, res, next) => {
         const error = validationResult(req);

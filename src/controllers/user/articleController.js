@@ -3,8 +3,9 @@ import Comment from '../../models/Comment.js';
 import Like from '../../models/Like.js';
 import client from '../../db/redis.js';
 
-import { formatarDataHora } from '../../utills/formatarDataHora.js';
-import { tempoRelativo } from '../../utills/tempoRelativo.js';
+import { formatDateTime } from '../../utills/formatarDataHora.js';
+import { relativeTime } from '../../utills/tempoRelativo.js';
+import { auth } from '../../middlewares/user/authorization.js';
 
 const CACHE_TTL = 300;
 
@@ -26,15 +27,15 @@ export const allArticles = async (req, res) => {
           .sort({ dataCriação: -1 })
           .skip(skip)
           .limit(limitNum)
-          .select('-_id -conteudo._id -__v')
+          .select('-_id -content._id -__v')
           .lean()
       ]);
 
       const articles = articlesData.map(a => ({
-        titulo: a.titulo,
-        autor: a.autor,
-        conteudo: a.conteudo,
-        criadoEm: formatarDataHora(a.dataCriação)
+        title: a.title,
+        auth: a.author,
+        content: a.content,
+        createdIn: formatDateTime(a.creationDate)
       }));
 
       const totalPages = Math.ceil(total / limitNum);
@@ -55,11 +56,11 @@ export const allArticles = async (req, res) => {
       await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data))
 
       res.status(200).json({ 
-        message: 'Artigos obtidos', 
+        message: 'Articles obtained', 
         data
       });
     } catch (error) {
-        res.status(500).json({ message: 'Erro interno no servidor' });
+        res.status(500).json({ message: 'Internal server error' });
         console.error(error);
     }
 }
@@ -71,14 +72,14 @@ export const loadArticle = async (req, res) => {
       const articleData = await Article.findOne({ slug })
 
       if (!articleData) {
-        return res.status(404).json({ message: 'Artigo não encontrado' });
+        return res.status(404).json({ message: 'Article not found' });
       }
 
       const articleId = articleData._id;
 
       const [article, likeCount, userComments] = await Promise.all([
         Article.findOne({ slug })
-          .select('-__v -conteudo._id -dataCriação -_id')
+          .select('-__v -conteudo._id -creationDate -_id')
           .lean(),
         Like.countDocuments({ article: articleId }),
         Comment.find({ article: articleId})
@@ -86,7 +87,7 @@ export const loadArticle = async (req, res) => {
           .sort({ createdAt: -1 })
           .populate({
             path: 'user',
-            select: '-_id -__v -password -role -artigosCurtidos -comments -email -createdAt'
+            select: '-_id -__v -password -role -email -creationDate'
           })
           .lean()
       ]);
@@ -94,22 +95,22 @@ export const loadArticle = async (req, res) => {
       const comment = userComments.map(c => ({
         content: c.post,
         user: c.user,
-        criado: tempoRelativo(c.createdAt),
-        editado: c.isEdited
+        createdIn: tempoRelativo(c.createdAt),
+        edited: c.isEdited
       }))
 
       res.status(200).json({
         article: {
           article,
-          criadoEm: formatarDataHora(articleData.dataCriação)
+          createdIn: formatarDataHora(article.dataCriação)
         },           
         likeCount,                  
         comments: comment
       });
 
     }catch (error) {
-      console.error('Erro ao carregar artigo:', error);
-      return res.status(500).json({ message: 'Erro interno no servidor' });
+      console.error('Error loading article', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
 };
 
@@ -139,10 +140,10 @@ export const findArticleByTag = async (req, res) => {
       ]);
 
       const articles = articlesData.map(a => ({
-        titulo: a.titulo,
-        autor: a.autor,
-        conteudo: a.conteudo,
-        criadoEm: formatarDataHora(a.dataCriação)
+        title: a.title,
+        author: a.author,
+        content: a.content,
+        cratedIn: formatDateTime(a.dataCriação)
       }));
 
       const totalPages = Math.ceil(total / limitNum);
@@ -163,11 +164,11 @@ export const findArticleByTag = async (req, res) => {
       await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data))
 
       res.status(200).json({ 
-        message: 'Artigos obtidos', 
+        message: 'Articles obtained', 
         data
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Erro interno' });
+      res.status(500).json({ message: 'Internal server error' });
     };
 };

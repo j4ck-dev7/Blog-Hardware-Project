@@ -1,5 +1,5 @@
 import Comment from '../../models/Comment.js';
-import { tempoRelativo } from '../../utills/tempoRelativo.js'
+import { relativeTime } from '../../utills/tempoRelativo.js'
 
 export const comment = async (req, res) => {
     const article = req.params.artigoId;
@@ -22,20 +22,20 @@ export const comment = async (req, res) => {
             })
             .populate({
                 path: 'article',
-                select: '-_id titulo'
+                select: '-_id title'
             })
             .lean();
 
         res.status(201).json({ 
-            message: "Comentário adicionado!", 
+            message: "Comment added", 
             comment: commentPopulate.post,
             user: commentPopulate.user, 
             article: commentPopulate.article,
-            criado: tempoRelativo(commentPopulate.createdAt) 
+            create: relativeTime(commentPopulate.createdAt) 
         });
     } catch (error) {
-        res.status(500).json({ message: 'Erro interno do servidor' });
-        console.error('Erro ao curtir um artigo', error);
+        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error while liking an article', error);
     }
 }
 
@@ -60,19 +60,19 @@ export const editComment = async (req, res) => {
             })
             .lean();
 
-        if(!editComment) return res.status(404).json({ message: 'Comentário não encontrado' });
+        if(!editComment) return res.status(404).json({ message: 'Comment not found' });
 
         res.status(200).json({ 
             message: 'Comentário editado!',
             comment: editComment.post,
             user: editComment.user, 
             article: editComment.article,
-            criado: tempoRelativo(editComment.createdAt),
-            Editado: editComment.isEdited
+            created: relativeTime(editComment.createdAt),
+            edited: editComment.isEdited
         });
     } catch (error) {
-        res.status(500).json({ message: 'Erro interno do servidor' });
-        console.error('Erro ao editar um comentário', error);
+        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error editing a comment', error);
     }
 }
 
@@ -80,10 +80,10 @@ export const removeComment = async (req, res) => {
     const id = req.params.commentId;
     try {
         const comment = await Comment.findByIdAndDelete( id );
-        if(!comment) return res.status(400).json({ error: 'Comentário não encontrado' });
-        res.status(204).json({ message: 'Comentário removido' });
+        if(!comment) return res.status(400).json({ message: 'Comment not found' });
+        res.status(204).json({ message: 'Comment removed' });
     } catch (error) {
-        console.error('Erro ao remover comentário', error);
-        res.status(500).json({ message: 'Erro interno no servidor' });
+        console.error('Error removing comment', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }

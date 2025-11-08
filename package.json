@@ -1,7 +1,7 @@
 {
-  "name": "blog-hardaware-project",
+  "name": "blog-api",
   "version": "1.0.0",
-  "description": "Blog sobre hardware para aplicar conhecimentos em  backend",
+  "description": "API que simula um backend de um blog",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/j4ck-dev7/Blog-Hardware-Project.git"
+    "url": "git+https://github.com/j4ck-dev7/Blog-API.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/j4ck-dev7/Blog-Hardware-Project/issues"
+    "url": "https://github.com/j4ck-dev7/Blog-API/issues"
   },
-  "homepage": "https://github.com/j4ck-dev7/Blog-Hardware-Project#readme",
+  "homepage": "https://github.com/j4ck-dev7/Blog-API#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",

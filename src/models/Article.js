@@ -1,40 +1,40 @@
 import mongoose from "mongoose";
 
 const contentSchema = new mongoose.Schema({
-    tipo: {
-        type: String, required: true, enum: ['paragrafo', 'imagem'],
+    type: {
+        type: String, required: true, enum: ['paragraph', 'image'],
     },
-    valor: {
+    value: {
         type: String, required: () => {
-            return contentSchema.tipo === 'paragrafo';
+            return contentSchema.type === 'paragraph';
         }
     },
     url: {
         type: String, required: () => {
-            return contentSchema.tipo === 'imagem';
+            return contentSchema.type === 'image';
         }
     },
-    legenda: {
+    legend: {
         type: String, required: () => {
-            return contentSchema.tipo === 'imagem';
+            return contentSchema.type === 'image';
         }
     },
     alt: {
         type: String, required: () => {
-            return contentSchema.tipo === 'imagem';
+            return contentSchema.type === 'image';
         }
     }
 }, { _id: false });
 
 const articleSchema = new mongoose.Schema({
-    titulo: { type: String, required: true, trim: true },
+    title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true },
-    dataCriação: { type: Date, default: Date.now },
-    autor: { type: String, required: true },
-    conteudo: [contentSchema],
+    creationDate: { type: Date, default: Date.now },
+    author: { type: String, required: true },
+    content: [contentSchema],
     tags: {
         type: [ String ],
-        enum: [ 'tag1', 'tag2', 'tag3', 'tag4', 'tag5' ],
+        enum: [ 'tag1', 'tag2', 'tag3' ],
         required: true
     }
 })

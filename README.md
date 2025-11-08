@@ -1,4 +1,4 @@
-# Hardware Blog API
+# Blog API
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/Node.js-v18.0%2B-blue)](https://nodejs.org/)
