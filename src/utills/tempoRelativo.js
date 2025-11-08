@@ -7,5 +7,5 @@ export const relativeTime = (date) => {
     if(seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
     if(seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
     if(seconds < 172800) return 'yesterday';
-    return `${Math.floor(segundos / 86400)} days ago`;
+    return `${Math.floor(seconds / 86400)} days ago`;
 }

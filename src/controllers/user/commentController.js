@@ -1,10 +1,26 @@
 import Comment from '../../models/Comment.js';
 import { relativeTime } from '../../utills/tempoRelativo.js'
+import { isValidObjectId } from '../../utills/isValidObjectId.js';
+import Article from '../../models/Article.js';
 
 export const comment = async (req, res) => {
-    const article = req.params.artigoId;
+    const article = req.params.articleId;
     const user = req.user._id;
     const post = req.body.post;
+
+    if (!isValidObjectId(user)) {
+        return res.status(400).json({ 
+            message: 'ID inválido' 
+        });
+    }
+    if (!isValidObjectId(article)) {
+        return res.status(400).json({ 
+            message: 'ID inválido' 
+        });
+    }
+
+    const articleValid = await Article.findById(article);
+    if(!articleValid) return res.status(400).json({ message: 'Article not found' });
 
     const comment = new Comment({
         post,
@@ -45,6 +61,11 @@ export const editComment = async (req, res) => {
     const commentId = req.params.commentId;
 
     try {
+        if (!isValidObjectId(commentId)) {
+            return res.status(400).json({ 
+                message: 'ID inválido' 
+            });
+        }
         const editComment = await Comment.findByIdAndUpdate(
             { _id: commentId },
             { $set: updateField },
@@ -77,9 +98,16 @@ export const editComment = async (req, res) => {
 }
 
 export const removeComment = async (req, res) => {
-    const id = req.params.commentId;
+    const commentId = req.params.commentId;
+
     try {
-        const comment = await Comment.findByIdAndDelete( id );
+        if (!isValidObjectId(commentId)) {
+            return res.status(400).json({ 
+                message: 'ID inválido' 
+            });
+        }
+        
+        const comment = await Comment.findByIdAndDelete( commentId );
         if(!comment) return res.status(400).json({ message: 'Comment not found' });
         res.status(204).json({ message: 'Comment removed' });
     } catch (error) {

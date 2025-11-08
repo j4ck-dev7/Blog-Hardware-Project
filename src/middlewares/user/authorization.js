@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 export const auth = (req, res, next) => {
-    const cookie = req.cookies.AuthCookie;
+    const cookie = req.cookies.userAuth;
     if(!cookie) return res.status(401).send('You need to be logged in');
 
     try {

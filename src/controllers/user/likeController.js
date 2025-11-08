@@ -1,8 +1,26 @@
+import Article from '../../models/Article.js';
 import Like from '../../models/Like.js'
+
+import { isValidObjectId } from '../../utills/isValidObjectId.js';
 
 export const like = async (req, res) => {
     const user = req.user._id;
-    const article = req.params.artigoId;
+    const article = req.params.articleId;
+
+    if (!isValidObjectId(user)) {
+        return res.status(400).json({ 
+            message: 'ID inválido' 
+        });
+    }
+
+    if (!isValidObjectId(article)) {
+        return res.status(400).json({ 
+            message: 'ID inválido' 
+        });
+    }
+
+    const articleValid = await Article.findById(article);
+    if(!articleValid) return res.status(400).json({ message: 'Article not found' });
 
     const liked = await Like.findOne({ user, article });
     if(liked) return res.status(409).json({ message: 'You already liked this article' });
@@ -23,7 +41,23 @@ export const like = async (req, res) => {
 
 export const removeLike = async (req, res) => {
     const user = req.user._id;
-    const article = req.params.artigoId;
+    const article = req.params.articleId;
+
+    if (!isValidObjectId(user)) {
+        return res.status(400).json({ 
+            message: 'ID inválido' 
+        });
+    }
+
+    if (!isValidObjectId(Article)) {
+        return res.status(400).json({ 
+            message: 'ID inválido' 
+        });
+    }
+
+    const articleValid = await Article.findById(article);
+    if(!articleValid) return res.status(400).json({ message: 'Article not found' });
+    
     try {
         const like = await Like.findOneAndDelete({ user, article });
         if(!like) return res.status(400).json({ message: 'Like not found' });
@@ -36,7 +70,13 @@ export const removeLike = async (req, res) => {
 
 export const allLikes = async (req, res) => {
     const user = req.user._id;
+
     try {
+        if (!isValidObjectId(user)) {
+            return res.status(400).json({ 
+                message: 'ID inválido' 
+            });
+        }
         const userCurtidas = await Like.find({ user })
             .populate('article', 'title content')
             .sort({ createdAt: -1 });

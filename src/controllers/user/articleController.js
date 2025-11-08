@@ -5,7 +5,7 @@ import client from '../../db/redis.js';
 
 import { formatDateTime } from '../../utills/formatarDataHora.js';
 import { relativeTime } from '../../utills/tempoRelativo.js';
-import { auth } from '../../middlewares/user/authorization.js';
+import { isValidObjectId } from '../../utills/isValidObjectId.js';
 
 const CACHE_TTL = 300;
 
@@ -30,6 +30,8 @@ export const allArticles = async (req, res) => {
           .select('-_id -content._id -__v')
           .lean()
       ]);
+
+      if(!articlesData.length) return res.status(400).json({ message: 'Articles not found' })
 
       const articles = articlesData.map(a => ({
         title: a.title,
@@ -76,6 +78,11 @@ export const loadArticle = async (req, res) => {
       }
 
       const articleId = articleData._id;
+      if (!isValidObjectId(articleId)) {
+        return res.status(400).json({ 
+          message: 'ID inválido' 
+        });
+      }
 
       const [article, likeCount, userComments] = await Promise.all([
         Article.findOne({ slug })
@@ -95,7 +102,7 @@ export const loadArticle = async (req, res) => {
       const comment = userComments.map(c => ({
         content: c.post,
         user: c.user,
-        createdIn: tempoRelativo(c.createdAt),
+        createdIn: relativeTime(c.createdAt),
         edited: c.isEdited
       }))
 

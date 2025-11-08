@@ -27,7 +27,15 @@ export const addArticle = async (req, res) => {
 };
 
 export const editArticle = async (req, res) => {
+    const articleId = req.params.id;
+
     try {
+        if (!isValidObjectId(articleId)) {
+            return res.status(400).json({ 
+                message: 'ID inválido' 
+            });
+        }
+
         const data = { ...req.body };
 
         if(data.title){
@@ -39,7 +47,7 @@ export const editArticle = async (req, res) => {
         };
 
         const artigoEdit = await Article.findByIdAndUpdate(
-            req.params.id,
+            articleId,
             { $set: data}, 
             { new: true, runValidators: true } 
         );
@@ -61,8 +69,15 @@ export const editArticle = async (req, res) => {
 };
 
 export const deleteArticle = async (req, res) => {
+    const articleId = req.params.id
     try {
-        const db = await Article.findByIdAndDelete(req.params.id);
+        if (!isValidObjectId(articleId)) {
+            return res.status(400).json({ 
+                message: 'ID inválido' 
+            });
+        }
+
+        const db = await Article.findByIdAndDelete(articleId);
         if(!db) return res.status(404).json({ message: 'The article does not exist' });
             
         res.status(204).json({ message: 'Article successfully deleted' });
