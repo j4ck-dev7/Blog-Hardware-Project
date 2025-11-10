@@ -6,7 +6,7 @@
 [![Redis](https://img.shields.io/badge/Redis-7.x-red)](https://redis.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Uma API RESTful completa para um blog, com autenticação JWT, cache com Redis (cache-aside), sistema de artigos, comentários, curtidas, pesquisa por tags e paginação.  
+Uma API RESTful para um blog, com autenticação JWT, cache com Redis (cache-aside), sistema de artigos, comentários, curtidas, pesquisa por tags e paginação.  
 Desenvolvida com **Node.js + Express + Mongoose + MongoDB** e testada com **Insomnia/Postman**.
 
 ## 🚀 Funcionalidades
