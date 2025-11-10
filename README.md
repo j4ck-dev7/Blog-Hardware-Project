@@ -1,120 +1,208 @@
-# Blog API
+# blog-API
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/Node.js-v18.0%2B-blue)](https://nodejs.org/)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://example.com)
+[![Node.js](https://img.shields.io/badge/Node.js-v20.x-green)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.19-blue)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7.x-brightgreen)](https://www.mongodb.com/)
+[![Redis](https://img.shields.io/badge/Redis-7.x-red)](https://redis.io/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Descrição
+Uma API RESTful completa para um blog, com autenticação JWT, cache com Redis (cache-aside), sistema de artigos, comentários, curtidas, pesquisa por tags e paginação.  
+Desenvolvida com **Node.js + Express + Mongoose + MongoDB** e testada com **Insomnia/Postman**.
 
-Esta é uma API REST que simula um backend de um blog. A API permite gerenciar artigos como administrador e como usuário pode adicionar comentários e curtidas, com suporte a autenticação de usuários. Futuramente, será integrada a um frontend para uma experiência completa de blog.
+## 🚀 Funcionalidades
 
-Principais funcionalidades:
-- Listagem e pesquisa de artigos.
-- Gerenciamento de usuários (cadastro e autenticação).
-- Postagem, edição e exclusão de comentários em artigos.
-- Adição e remoção de curtidas em artigos.
-- Retorno de contagem de curtidas e lista de comentários por artigo.
+### Admin (gerenciamento de conteúdo)
+- `POST   /admin/signIn` → Login
+- `POST   /admin/addArticle` → Criar artigo  
+- `PUT    /admin/editArticle` → Editar artigo  
+- `DELETE /admin/delArticle` → Excluir artigo  
 
-A API é construída com [Node.js](https://nodejs.org/) e [Express.js](https://expressjs.com/), utilizando um banco de dados [MongoDB](https://www.mongodb.com/) e mongoose para modelagem de dados. Ela segue princípios de REST e usa JWT para autenticação.
+### Usuário
+- `POST   /user/signUp` → Registro  
+- `POST   /user/signIn` → Login (retorna cookie HttpOnly com JWT)  
+- `GET    /user/articles?page=1&limit=5` → Listar artigos com paginação  
+- `GET    /user/articles/tag?tag=node&page=1&limit=5` → Busca por tag  
+- `GET    /user/article/:slug` → Detalhe do artigo  
+- `POST   /user/article/:articleId/comment` → Comentar  
+- `PUT    /user/comment/:commentId` → Editar comentário  
+- `DELETE /user/comment/:commentId` → Deletar comentário  
+- `POST   /user/article/:articleId/like` → Curtir artigo  
+- `DELETE /user/article/like/:articleId` → Remover curtida  
+- `GET    /user/likes` → Listar todos os artigos curtidos  
 
-## Pré-requisitos
+### Recursos técnicos
+- Autenticação via **JWT + cookie HttpOnly**  
+- **Cache-aside** com Redis (artigos e buscas)  
+- Validação com **express-validator**  
+- Proteção de rotas admin e user (middleware `authAdmin | userAuth`)
+- Paginação   
+- Invalidação automática de cache após alterações 
 
-- Node.js v18.0 ou superior.
-- Banco de dados configurado (MongoDB Atlas)
-- Variáveis de ambiente definidas em um arquivo `.env` (veja o exemplo abaixo).
+## 📦 Tecnologias
 
-## Instalação
+| Tecnologia         | Versão  | Uso                          |
+|--------------------|---------|------------------------------|
+| Node.js            | 22.21.1 | Runtime                      |
+| Express            | 5.1.0   | Framework web                |
+| Mongoose           | 8.16.4  | ODM MongoDB                  |
+| MongoDB            | 6.18.0  | Banco de dados               |
+| Redis              | 5.9.0   | Cache (cache-aside)          |
+| jsonwebtoken       | 9.0.2   | JWT                          |
+| cookie-parser      | 1.4.7   | Leitura de cookies           |
+| express-validator  | 7.2.1   | Validação de entrada         |
+| bcryptjs           | 3.0.4   | Hash de senhas               |
+| slugify            | 1.6.6   | Geração de slugs             |
 
-1. Clone o repositório:
+## ⚙️ Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/blog-API.git
+cd blog-API
+
+# Instale as dependências
+npm install
+```
+
+## Variáveis de ambiente (.env)
+```env
+PORT=5000
+MONGO_CONNECT=mongodb+srv://username:password@cluster1.78fk80s.mongodb.net/blogapi?retryWrites=true&w=majority&appName=Cluster1
+SECRET=SuaChaveSuperSecretaAqui!
+REDIS_URL=redis://localhost:6379
+```
+Use Redis Cloud (gratuito) e MongoDB Atlas (free tier)
+
+## 🏃‍♂️ Executando 
+```bash
+# Inicie o servidor
+node server.js
+
+#A API estará disponível em http://localhost:5000/api/
+```
+
+## 🔐 Autenticação
+1. Criar admin
+   ```http
+   POST http://localhost:5000/api/user/signUp
+   Content-Type: application/json
+   
+   {
+     "name": "Admin",
+     "email": "admin@blog.com",
+     "password": "admin123",
+   }
    ```
-   git clone https://github.com/j4ck-dev7/Blog-Project.git
-   cd blog-project
+   Atenção: Para que o user vire usuário é necessário que modifique o valor do campo role para 'admin' no banco de dados.
+
+2. Login
+   ```http
+   POST http/localhost:5000/api/admin/signIn
    ```
+   Retorna cookie: adminAuth=eyJhbGciOiJIUzI1NiIsIn...
 
-2. Instale as dependências:
-   ```
-   npm install
-   ```
+3. Todas as rotas protegidas exigem o cookie
+   Sem cookie → 401 Access denied
 
-3. Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
-   ```
-   PORT=5000
-   MONGO_CONNECT='mongodb+srv://user:password@cluster1.78fk80s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1'
-   JWT_SECRET=seu-segredo-aqui
-   ```
+## 📋 Exemplos de Requisições
+Criar artigo (admin)
+```json
+POST /admin/addArticle
+{
+	"title":"Node.js com Redis Cache",
+	"author":"admin",
+	"tags":["nodejs", "redis", "cache"],
+	"content":[
+		{
+			"type":"paragraph",
+			"value":"Primeiro paragrafo"
+		},
+		{
+			"type":"paragraph",
+			"value":"Segundo paragrafo"
+		},
+		{
+			"type":"image",
+			"url":"assets/img/img.png",
+			"legend":"Legenda da imagem",
+			"alt":"Imagem.png"
+		}
+	]
+}
+```
+Resposta:
+```json
+{
+	"message": "Article created successfully",
+	"article": {
+		"title": "Node.js com Redis Cache",
+		"slug": "nodejs-com-redis-cache",
+		"author": "admin",
+		"content": [
+			{
+				"type": "paragraph",
+				"value": "Primeiro paragrafo"
+			},
+			{
+				"type": "paragraph",
+				"value": "Segundo paragrafo"
+			},
+			{
+				"type": "image",
+				"url": "assets/img/img.png",
+				"legend": "Legenda da imagem",
+				"alt": "Imagem.png"
+			}
+		],
+		"tags": [
+			"nodejs",
+			"redis",
+         "cache"
+		],
+		"_id": "6910f0f80b0edb5e2758c72a",
+		"creationDate": "2025-11-09T19:52:24.657Z",
+		"__v": 0
+	}
+}
+```
 
-4. Inicie o servidor:
-   ```
-   node server.js
-   ```
+Listar artigos (user)
+```http
+GET /user/articles?page=1&limit=5
+```
 
-## Uso
+Buscar por tag (user)
+```http
+GET /user/articles?page=1&limit=5&tag=nodejs
+```
 
-A API está disponível em `http://localhost:5000` (ou a porta definida). Use ferramentas como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/) para testar os endpoints.
+Curtir artigo (user)
+```http
+GET /user/article/673f2e1c9d5a2c1f8e9d4a2b/like
+```
+O id é do artigo
 
-### Autenticação
-- A maioria dos endpoints requer autenticação via JWT. Para obter um token:
-  - Cadastre um usuário via POST `/api/users/register`.
-  - Faça login via POST `/api/users/login` e use o token retornado no cookie `auth: <token>`.
+Carregar artigo (user)
+```http
+GET /user/article/nodejs-com-redis-cache
+```
 
-## Endpoints
+## ⚡ Cache Redis
+- Primeira request → MongoDB → salva no Redis
+- Próximas → direto do Redis
+- Cache invalidado automaticamente ao criar/editar/excluir artigo
 
-### Artigos
-- **GET /api/articles**  
-  Retorna todos os artigos.  
-  Parâmetros opcionais: `?search=termo` para pesquisa por título ou conteúdo.  
-  Resposta: Array de artigos com ID, título, conteúdo, data, contagem de curtidas e comentários.
+## 🤝 Contribuindo
+- Fork
+- Crie sua branch: git checkout -b feature/nova-funcao
+- Commit: git commit -m 'feat: adiciona nova função'
+- Push e abra um PR
 
-- **GET /api/articles/:id**  
-  Retorna um artigo específico, incluindo lista de comentários e contagem de curtidas.
+## 📄 Licença
+Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-### Comentários
-- **GET /api/articles/:id/comments**  
-  Retorna comentários de um artigo.
-
-- **POST /api/articles/:id/comments** (Autenticado)  
-  Adiciona um comentário.  
-  Body: `{ "content": "string" }`
-
-- **PUT /api/comments/:commentId** (Autenticado, dono do comentário)  
-  Edita um comentário.  
-  Body: `{ "content": "string" }`
-
-- **DELETE /api/comments/:commentId** (Autenticado, dono ou admin)  
-  Exclui um comentário.
-
-### Curtidas
-- **POST /api/articles/:id/likes** (Autenticado)  
-  Adiciona uma curtida.
-
-- **DELETE /api/articles/:id/likes** (Autenticado)  
-  Remove uma curtida.
-
-### Usuários
-- **POST /api/users/register**  
-  Cadastra um novo usuário.  
-  Body: `{ "username": "string", "email": "string", "password": "string" }`
-
-- **POST /api/users/login**  
-  Faz login e retorna JWT.  
-  Body: `{ "email": "string", "password": "string" }`
-
-## Contribuição
-
-Contribuições são bem-vindas! Siga estes passos:
-1. Fork o repositório.
-2. Crie uma branch: `git checkout -b feature/nova-funcionalidade`.
-3. Commit suas mudanças: `git commit -m 'Adiciona nova funcionalidade'`.
-4. Push para a branch: `git push origin feature/nova-funcionalidade`.
-5. Abra um Pull Request.
-
-Por favor, siga o [Código de Conduta](CODE_OF_CONDUCT.md).
-
-## Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
-
-## Contato
-
-- Autor: Jackson (j4ckson7dev@gmail.com)
-- GitHub: [j4ck-dev7](https://github.com/j4ck-dev7)
+## ✉️ Contato
+- **Nome**: Jackson
+- **Email**: j4ckson7dev@gmail.com
+- **LinkedIn**: [Jackson](https://www.linkedin.com/in/jackson-de-ara%C3%BAjo-229733398/)
+- **GitHub**: [j4ck-dev7](https://github.com/j4ck-dev7)
