@@ -15,7 +15,7 @@ Principais funcionalidades:
 - Adição e remoção de curtidas em artigos.
 - Retorno de contagem de curtidas e lista de comentários por artigo.
 
-A API é construída com [Node.js](https://nodejs.org/) e [Express.js](https://expressjs.com/), utilizando um banco de dados [MongoDB](https://www.mongodb.com/). Ela segue princípios de REST e usa JWT para autenticação.
+A API é construída com [Node.js](https://nodejs.org/) e [Express.js](https://expressjs.com/), utilizando um banco de dados [MongoDB](https://www.mongodb.com/) e mongoose para modelagem de dados. Ela segue princípios de REST e usa JWT para autenticação.
 
 ## Pré-requisitos
 
@@ -27,8 +27,8 @@ A API é construída com [Node.js](https://nodejs.org/) e [Express.js](https://e
 
 1. Clone o repositório:
    ```
-   git clone https://github.com/seu-usuario/Blog-Hardware-Project.git
-   cd blog-hardware-project
+   git clone https://github.com/j4ck-dev7/Blog-Project.git
+   cd blog-project
    ```
 
 2. Instale as dependências:
