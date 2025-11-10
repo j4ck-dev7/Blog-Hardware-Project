@@ -1,5 +1,6 @@
 import slugify from 'slugify';
 import client from '../../db/redis.js';
+import { isValidObjectId } from '../../utills/isValidObjectId.js';
 
 import Article from '../../models/Article.js';
 
@@ -27,7 +28,7 @@ export const addArticle = async (req, res) => {
 };
 
 export const editArticle = async (req, res) => {
-    const articleId = req.params.id;
+    const articleId = req.params.articleId;
 
     try {
         if (!isValidObjectId(articleId)) {
@@ -69,7 +70,7 @@ export const editArticle = async (req, res) => {
 };
 
 export const deleteArticle = async (req, res) => {
-    const articleId = req.params.id
+    const articleId = req.params.articleId
     try {
         if (!isValidObjectId(articleId)) {
             return res.status(400).json({ 

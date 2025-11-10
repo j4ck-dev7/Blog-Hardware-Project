@@ -43,13 +43,15 @@ export const removeLike = async (req, res) => {
     const user = req.user._id;
     const article = req.params.articleId;
 
+    console.log(user, article)
+
     if (!isValidObjectId(user)) {
         return res.status(400).json({ 
             message: 'ID inválido' 
         });
     }
 
-    if (!isValidObjectId(Article)) {
+    if (!isValidObjectId(article)) {
         return res.status(400).json({ 
             message: 'ID inválido' 
         });
@@ -78,11 +80,12 @@ export const allLikes = async (req, res) => {
             });
         }
         const userCurtidas = await Like.find({ user })
-            .populate('article', 'title content')
-            .sort({ createdAt: -1 });
+            .select('-_id -__v -user -creationDate')
+            .populate('article', 'title -_id')
+            .sort({ creationDate: -1 });
         
         if(!userCurtidas.length) return res.status(400).json({ message: 'No likes' });
-        res.status(200).json(userCurtidas);
+        res.status(200).json({ message: 'Likes obteined', userCurtidas});
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
         console.error('Server error:', error);

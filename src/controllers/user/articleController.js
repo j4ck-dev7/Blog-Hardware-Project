@@ -24,7 +24,7 @@ export const allArticles = async (req, res) => {
       const [total, articlesData] = await Promise.all([
         Article.countDocuments(),
         Article.find()
-          .sort({ dataCriação: -1 })
+          .sort({ creationDate: -1 })
           .skip(skip)
           .limit(limitNum)
           .select('-_id -content._id -__v')
@@ -71,22 +71,22 @@ export const loadArticle = async (req, res) => {
     const { slug } = req.params;
 
     try {
-      const articleData = await Article.findOne({ slug })
+      const articleFind = await Article.findOne({ slug })
 
-      if (!articleData) {
-        return res.status(404).json({ message: 'Article not found' });
+      if (!articleFind) {
+        return res.status(404).json({ message: 'Article not found1' });
       }
 
-      const articleId = articleData._id;
+      const articleId = articleFind._id;
       if (!isValidObjectId(articleId)) {
         return res.status(400).json({ 
           message: 'ID inválido' 
         });
       }
 
-      const [article, likeCount, userComments] = await Promise.all([
+      const [data, likeCount, userComments] = await Promise.all([
         Article.findOne({ slug })
-          .select('-__v -conteudo._id -creationDate -_id')
+          .select('-__v -conteudo._id -creationDate -_id -slug')
           .lean(),
         Like.countDocuments({ article: articleId }),
         Comment.find({ article: articleId})
@@ -99,17 +99,23 @@ export const loadArticle = async (req, res) => {
           .lean()
       ]);
 
+      const articleLoad = {
+        title: data.title,
+        author: data.author,
+        content: data.content,
+        createIn: formatDateTime(articleFind.creationDate)
+      }
+
       const comment = userComments.map(c => ({
         content: c.post,
         user: c.user,
-        createdIn: relativeTime(c.createdAt),
+        createdIn: relativeTime(c.creationDate),
         edited: c.isEdited
       }))
 
       res.status(200).json({
         article: {
-          article,
-          createdIn: formatarDataHora(article.dataCriação)
+          articleLoad,
         },           
         likeCount,                  
         comments: comment
@@ -123,6 +129,7 @@ export const loadArticle = async (req, res) => {
 
 export const findArticleByTag = async (req, res) => {
       const tags = req.query.tag;
+      console.log(tags);
 
       const pageNum = Math.max(1, parseInt(req.query.page));
       const limitNum = Math.min(5, Math.max(1, parseInt(req.query.limit)));
@@ -150,7 +157,7 @@ export const findArticleByTag = async (req, res) => {
         title: a.title,
         author: a.author,
         content: a.content,
-        cratedIn: formatDateTime(a.dataCriação)
+        cratedIn: formatDateTime(a.creationDate)
       }));
 
       const totalPages = Math.ceil(total / limitNum);

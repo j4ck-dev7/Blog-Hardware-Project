@@ -31,10 +31,10 @@ export const comment = async (req, res) => {
     try {
         await comment.save();
         const commentPopulate = await Comment.findById(comment._id)
-            .select('createdAt post')
+            .select('creationDate post')
             .populate({
                 path: 'user',
-                select: '-_id -password -role -email -createdAt -__v'
+                select: '-_id -password -role -email -creationDate -__v'
             })
             .populate({
                 path: 'article',
@@ -47,7 +47,7 @@ export const comment = async (req, res) => {
             comment: commentPopulate.post,
             user: commentPopulate.user, 
             article: commentPopulate.article,
-            create: relativeTime(commentPopulate.createdAt) 
+            create: relativeTime(commentPopulate.creationDate) 
         });
     } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
@@ -70,14 +70,14 @@ export const editComment = async (req, res) => {
             { _id: commentId },
             { $set: updateField },
             { runValidators: true, new: true }
-        ).select('createdAt post +isEdited')
+        ).select('creationDate post +isEdited')
             .populate({
                 path: 'user',
                 select: '-_id -password -role -email -createdAt -__v'
             })
             .populate({
                 path: 'article',
-                select: '-_id titulo'
+                select: '-_id title'
             })
             .lean();
 
@@ -88,7 +88,7 @@ export const editComment = async (req, res) => {
             comment: editComment.post,
             user: editComment.user, 
             article: editComment.article,
-            created: relativeTime(editComment.createdAt),
+            created: relativeTime(editComment.creationDate),
             edited: editComment.isEdited
         });
     } catch (error) {

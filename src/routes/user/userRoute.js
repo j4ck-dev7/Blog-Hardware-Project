@@ -14,15 +14,15 @@ const router = express.Router();
 
 router.get('/likes', auth, allLikes);
 router.get('/articles', auth, allArticles);
-router.get('/articles/:slug', auth, loadArticle);
 router.get('/articles/tag', auth, findArticleByTag);
+router.get('/article/:slug', auth, loadArticle);
 
 router.post('/signIn', loginValidate, signIn);
 router.post('/signUp', signUpValidator, signUp);
 router.post('/article/:articleId/like', auth, like);
 router.post('/article/:articleId/comment', auth, comment);
 
-router.put('/article/:articleId/comment/:commentId', auth, editComment);
+router.put('/article/comment/:commentId', auth, editComment);
 
 router.delete('/article/like/:articleId', auth, removeLike);
 router.delete('/article/comment/:commentId', auth, removeComment);

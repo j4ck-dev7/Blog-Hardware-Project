@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/signIn', loginValidate, signIn);
 router.post('/addArticle', adminAuth, addArticle);
 
-router.put('/editArticle/:artcleId', adminAuth, editArticle);
+router.put('/editArticle/:articleId', adminAuth, editArticle);
 
 router.delete('/deleteArticle/:articleId', adminAuth, deleteArticle)
 
