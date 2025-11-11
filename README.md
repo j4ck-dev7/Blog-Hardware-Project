@@ -157,7 +157,7 @@ Resposta:
 		"tags": [
 			"nodejs",
 			"redis",
-         "cache"
+         	"cache"
 		],
 		"_id": "6910f0f80b0edb5e2758c72a",
 		"creationDate": "2025-11-09T19:52:24.657Z",
