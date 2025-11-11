@@ -34,7 +34,6 @@ const articleSchema = new mongoose.Schema({
     content: [contentSchema],
     tags: {
         type: [ String ],
-        enum: [ 'tag1', 'tag2', 'tag3' ],
         required: true
     }
 })
