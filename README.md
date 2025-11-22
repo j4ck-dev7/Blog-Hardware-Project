@@ -6,7 +6,7 @@
 [![Redis](https://img.shields.io/badge/Redis-7.x-red)](https://redis.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Uma API RESTful para um blog, com autenticação JWT, cache com Redis (cache-aside), sistema de artigos, comentários, curtidas, pesquisa por tags e paginação.  
+Uma API RESTful para um blog, com autenticação JWT, cache com Redis (cache-aside), sistema de artigos, assinatuas com Stripe, comentários, curtidas, pesquisa por tags e paginação.  
 Desenvolvida com **Node.js + Express + Mongoose + MongoDB** e testada com **Insomnia/Postman**.
 
 ## 🚀 Funcionalidades
@@ -28,7 +28,8 @@ Desenvolvida com **Node.js + Express + Mongoose + MongoDB** e testada com **Inso
 - `DELETE /user/comment/:commentId` → Deletar comentário  
 - `POST   /user/article/:articleId/like` → Curtir artigo  
 - `DELETE /user/article/like/:articleId` → Remover curtida  
-- `GET    /user/likes` → Listar todos os artigos curtidos  
+- `GET    /user/likes` → Listar todos os artigos curtidos
+- `POST    /subscribe` → Assina um plano basic, intermediate ou premium
 
 ### Recursos técnicos
 - Autenticação via **JWT + cookie HttpOnly**  
@@ -109,9 +110,11 @@ Criar artigo (admin)
 ```json
 POST /admin/addArticle
 {
-	"title":"Node.js com Redis Cache",
+	"title":"PHP, Laravel, Orthogonality",
 	"author":"admin",
-	"tags":["nodejs", "redis", "cache"],
+	"banner":"assets/banner/img.png",
+	"tags":["php", "laravel", "orthogonality"],
+	"planRoles": "intermediate",
 	"content":[
 		{
 			"type":"paragraph",
@@ -135,8 +138,8 @@ Resposta:
 {
 	"message": "Article created successfully",
 	"article": {
-		"title": "Node.js com Redis Cache",
-		"slug": "nodejs-com-redis-cache",
+		"title": "PHP, Laravel, Orthogonality",
+		"slug": "php-laravel-orthogonality",
 		"author": "admin",
 		"content": [
 			{
@@ -154,13 +157,15 @@ Resposta:
 				"alt": "Imagem.png"
 			}
 		],
+		"banner": "assets/banner/img.png",
 		"tags": [
-			"nodejs",
-			"redis",
-         	"cache"
+			"php",
+			"laravel",
+			"orthogonality"
 		],
-		"_id": "6910f0f80b0edb5e2758c72a",
-		"creationDate": "2025-11-09T19:52:24.657Z",
+		"planRoles": "intermediate",
+		"_id": "691cc504c5327f68d49516f8",
+		"creationDate": "2025-11-18T19:12:04.094Z",
 		"__v": 0
 	}
 }
@@ -169,6 +174,52 @@ Resposta:
 Listar artigos (user)
 ```http
 GET /user/articles?page=1&limit=5
+```
+Resposta:
+```json
+	"message": "Articles obtained",
+	"data": {
+		"articles": [
+			{
+				"title": "PHP, Laravel, Orthogonality",
+				"author": "admin",
+				"plan": "intermediate",
+				"createdIn": "18/11/2025, 16:12"
+			},
+			{
+				"title": "PHP, Laravel, Jwt",
+				"author": "admin",
+				"plan": "premium",
+				"createdIn": "18/11/2025, 16:09"
+			},
+			{
+				"title": "Node.js e TypeScript com Fastify",
+				"author": "admin",
+				"plan": "premium",
+				"createdIn": "18/11/2025, 09:38"
+			},
+			{
+				"title": "Node.js e TypeScript com Redis Cache",
+				"author": "admin",
+				"plan": "basic",
+				"createdIn": "18/11/2025, 09:12"
+			},
+			{
+				"title": "Node.js com Redis Cache",
+				"author": "admin",
+				"plan": "free",
+				"createdIn": "18/11/2025, 09:10"
+			}
+		],
+		"pagination": {
+			"total": 5,
+			"pages": 1,
+			"currentPage": 1,
+			"limit": 5,
+			"hasNext": false,
+			"hasPrev": false
+		}
+	}
 ```
 
 Buscar por tag (user)
@@ -186,11 +237,32 @@ Carregar artigo (user)
 ```http
 GET /user/article/nodejs-com-redis-cache
 ```
+Alguns artigos são inacessíveis por causa dos planos de assinatura
 
 ## ⚡ Cache Redis
 - Primeira request → MongoDB → salva no Redis
 - Próximas → direto do Redis
 - Cache invalidado automaticamente ao criar/editar/excluir artigo
+  
+## 📝 Assinatura com Stripe
+Assinar um plano:
+```http
+POST http://localhost:5000/api/user/subscribe
+   Content-Type: application/json
+   
+   {
+     "subscription": "plano"
+   }
+```
+
+Resposta:
+```json
+{
+	"url": "https://checkout.stripe.com/c/pay/cs_test_"
+}
+```
+Ao clicar na url retornada, uma página da stripe será carregada, use 4242 4242 4242 4242 no número do cartão enquanto os outros campos pode pôr qualquer coisa.
+Quando o pagamento for efetuado basta logar novamente na api para que o plano funcione.
 
 ## 🤝 Contribuindo
 - Fork
