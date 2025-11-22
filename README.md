@@ -37,7 +37,8 @@ Desenvolvida com **Node.js + Express + Mongoose + MongoDB** e testada com **Inso
 - Validação com **express-validator**  
 - Proteção de rotas admin e user (middleware `authAdmin | userAuth`)
 - Paginação   
-- Invalidação automática de cache após alterações 
+- Invalidação automática de cache após alterações
+- Planos de assinaturas usando stripe
 
 ## 📦 Tecnologias
 
