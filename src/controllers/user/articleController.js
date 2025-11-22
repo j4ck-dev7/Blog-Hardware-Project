@@ -1,13 +1,14 @@
 import Article from '../../models/Article.js';
 import Comment from '../../models/Comment.js';
 import Like from '../../models/Like.js';
-import client from '../../db/redis.js';
+import client from '../../config/redis.js';
+import User from '../../models/User.js';
 
 import { formatDateTime } from '../../utills/formatarDataHora.js';
 import { relativeTime } from '../../utills/tempoRelativo.js';
 import { isValidObjectId } from '../../utills/isValidObjectId.js';
 
-const CACHE_TTL = 300;
+const CACHE_TTL = 30;
 
 export const allArticles = async (req, res) => {
     try {
@@ -27,7 +28,7 @@ export const allArticles = async (req, res) => {
           .sort({ creationDate: -1 })
           .skip(skip)
           .limit(limitNum)
-          .select('-_id -content._id -__v')
+          .select('-_id -__v -content')
           .lean()
       ]);
 
@@ -35,8 +36,8 @@ export const allArticles = async (req, res) => {
 
       const articles = articlesData.map(a => ({
         title: a.title,
-        auth: a.author,
-        content: a.content,
+        author: a.author,
+        plan: a.planRole,
         createdIn: formatDateTime(a.creationDate)
       }));
 
@@ -69,12 +70,37 @@ export const allArticles = async (req, res) => {
 
 export const loadArticle = async (req, res) => {
     const { slug } = req.params;
+    const planWeight = {
+      free: 0,
+      basic: 1,
+      intermediate: 2,
+      premium: 3
+    }
 
     try {
       const articleFind = await Article.findOne({ slug })
 
       if (!articleFind) {
-        return res.status(404).json({ message: 'Article not found1' });
+        return res.status(404).json({ message: 'Article not found' });
+      }
+
+      const now = new Date();
+
+      const planUser = planWeight[req.user.subscription.plan];
+      const planExpires = new Date(req.user.subscription.expiresAt);
+      const planArticle = planWeight[articleFind.planRole];
+
+      if(planUser < planArticle) return res.status(403).json({
+        message: 'Access denied: Upgrade your subscription to access this article'
+      })
+
+      if(now > planExpires) {
+        await User.findByIdAndUpdate(req.user._id, {
+          'subscription.plan': 'free',
+          'subscription.expiresAt': null,
+        });
+
+        return res.status(403).json({ message: 'Access denied: Renew your subscription' })
       }
 
       const articleId = articleFind._id;
@@ -129,7 +155,6 @@ export const loadArticle = async (req, res) => {
 
 export const findArticleByTag = async (req, res) => {
       const tags = req.query.tag;
-      console.log(tags);
 
       const pageNum = Math.max(1, parseInt(req.query.page));
       const limitNum = Math.min(5, Math.max(1, parseInt(req.query.limit)));

@@ -12,7 +12,7 @@ export const signIn = async (req, res) => {
     if (!passwordMatch) return res.status(400).send("Incorrect email or password.");
 
     try {
-        let token = jwt.sign( { _id : selectedUser._id, email }, process.env.SECRET )
+        let token = jwt.sign( { _id : selectedUser._id, subscription: selectedUser.subscription, email }, process.env.SECRET )
         res.cookie('userAuth', token, { secure: true, httpOnly: true, expires: new Date(Date.now() + 2 * 3600000) })
         res.status(200).json({ message: "User logged in successfully" })
     } catch (error) {

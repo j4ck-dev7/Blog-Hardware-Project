@@ -16,7 +16,7 @@ export const signUp = async (req, res) => {
 
     try {
         const savedUser = await user.save();
-        let token = jwt.sign( { _id : savedUser._id, email }, process.env.SECRET );
+        let token = jwt.sign( { _id : savedUser._id, subscription: savedUser.subscription, email }, process.env.SECRET );
         res.cookie('userAuth', token, { secure: true, httpOnly: true, expires: new Date(Date.now() + 2 * 3600000) });
         res.status(201).json({ message: "User successfully registered" });
     } catch (error) {

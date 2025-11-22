@@ -1,12 +1,12 @@
 import slugify from 'slugify';
-import client from '../../db/redis.js';
+import client from '../../config/redis.js';
 import { isValidObjectId } from '../../utills/isValidObjectId.js';
 
 import Article from '../../models/Article.js';
 
 export const addArticle = async (req, res) => {
     try {
-        const { content, title, author, tags } = req.body;
+        const { content, title, author, tags, planRole, banner } = req.body;
         const slug = slugify(title, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
 
         const article = new Article({
@@ -14,7 +14,9 @@ export const addArticle = async (req, res) => {
             slug,
             author,
             content,
-            tags
+            tags,
+            planRole,
+            banner
         });    
         await article.save();
 

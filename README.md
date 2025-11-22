@@ -57,7 +57,7 @@ Desenvolvida com **Node.js + Express + Mongoose + MongoDB** e testada com **Inso
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/blog-API.git
+git clone https://github.com/j4ck-dev7/blog-API.git
 cd blog-API
 
 # Instale as dependências
@@ -204,5 +204,5 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 ## ✉️ Contato
 - **Nome**: Jackson
 - **Email**: j4ckson7dev@gmail.com
-- **LinkedIn**: [Jackson](https://www.linkedin.com/in/jackson-de-ara%C3%BAjo-229733398/)
+- **LinkedIn**: [Jackson](https://www.linkedin.com/in/jackson-de-ara%C3%BAjo-568b6b398/)
 - **GitHub**: [j4ck-dev7](https://github.com/j4ck-dev7)

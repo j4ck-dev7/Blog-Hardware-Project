@@ -32,9 +32,15 @@ const articleSchema = new mongoose.Schema({
     creationDate: { type: Date, default: Date.now },
     author: { type: String, required: true },
     content: [contentSchema],
+    banner: { type: String, required: true },
     tags: {
         type: [ String ],
         required: true
+    },
+    planRole: {
+        type: String,
+        enum: [ 'free', 'basic', 'intermediate', 'premium' ],
+        default: 'free'
     }
 })
 

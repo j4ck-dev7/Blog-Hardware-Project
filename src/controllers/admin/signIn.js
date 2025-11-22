@@ -8,7 +8,7 @@ export const signIn = async (req, res) => {
     const selectedUser = await User.findOne({ email });
     if(!selectedUser) return res.status(400).send("Incorrect email or password");
 
-    const passwordMatch = bcryptjs.compare(req.body.password, selectedUser.password);
+    const passwordMatch = await bcryptjs.compare(req.body.password, selectedUser.password);
     if(!passwordMatch) return res.status(400).send("Incorrect email or password");
 
     if(selectedUser.role === 'user') return res.status(401).send('Access Denied!');

@@ -9,7 +9,18 @@ const userSchema = new mongoose.Schema({
         enum: [ 'admin', 'user' ],
         default: 'user'
     },
-    creationDate: { type: Date, default: Date.now }
+    creationDate: { type: Date, default: Date.now },
+    subscription: {
+        plan: {
+            type: String,
+            enum: [ 'free', 'basic', 'intermediate', 'premium' ],
+            default: 'free',
+        },
+        expiresAt: {
+            type: Date,
+            default: null
+        }
+    },
 })
 
 export default mongoose.model('User', userSchema);
