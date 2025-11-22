@@ -53,6 +53,7 @@ Desenvolvida com **Node.js + Express + Mongoose + MongoDB** e testada com **Inso
 | express-validator  | 7.2.1   | Validação de entrada         |
 | bcryptjs           | 3.0.4   | Hash de senhas               |
 | slugify            | 1.6.6   | Geração de slugs             |
+| stripe             | 20.0.0  | Gateway de pagamentos        |
 
 ## ⚙️ Instalação
 
